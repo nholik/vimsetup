@@ -1,0 +1,6 @@
+[submodule "bundle/colorschemes"]
+	path = bundle/colorschemes
+	url = https://github.com/flazz/vim-colorschemes.git
+[submodule "bundle/terminus"]
+	path = bundle/terminus
+	url = https://github.com/wincent/terminus.git
