@@ -4,3 +4,6 @@
 [submodule "bundle/terminus"]
 	path = bundle/terminus
 	url = https://github.com/wincent/terminus.git
+[submodule "/home/max/.vim/bundle/nerdtree"]
+	path = /home/max/.vim/bundle/nerdtree
+	url = https://github.com/scrooloose/nerdtree.git
