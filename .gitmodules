@@ -7,3 +7,6 @@
 [submodule "/home/max/.vim/bundle/nerdtree"]
 	path = /home/max/.vim/bundle/nerdtree
 	url = https://github.com/scrooloose/nerdtree.git
+[submodule "bundle/fugitive"]
+	path = bundle/fugitive
+	url = http://github.com/tpope/vim-fugitive.git
