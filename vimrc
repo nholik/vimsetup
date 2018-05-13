@@ -17,7 +17,7 @@ set ttyfast
 let mapleader = ","
 set laststatus=2
 set noswapfile
-"g:airline_powerline_fonts
+
 "Markdown setup
 "let vim_markdown_preview_github=1
 "let vim_markdown_preview_browser='/usr/bin/google-chrome-stable %U'
@@ -50,11 +50,24 @@ let g:jsx_ext_required = 0
 if has('nvim')
     call deoplete#enable()
     let g:deoplete#enable_at_startup = 1
-endif
 
-"autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+    "let g:deoplete#omni#functions = {}
+    "let g:deoplete#omni#functions.javascript = [
+    "        \ 'tern#Complete',
+    "        \ 'jspc#omni'
+    "        \]
 
-if has('nvim')
+    set completeopt=longest,menuone,preview
+    "let g:deoplete#sources = {}
+    "let g:deoplete#sources['javascript.jsx'] = ['file','ultisnips', 'ternjs']
+
+    "let g:deoplete#sources#ternjs#types = 1
+    "let g:tern#command = ['tern']
+    "let g:tern#arguments = ['--persistent']
     let g:python_host_prog = '/home/max/.pyenv/versions/neovim2/bin/python'
     let g:python3_host_prog = '/home/max/.pyenv/versions/neovim3/bin/python'
+
 endif
+
+
+"autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
