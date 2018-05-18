@@ -18,11 +18,11 @@ Plug 'scrooloose/nerdtree', {'on': 'NERDTreeToggle'}
 Plug 'flazz/vim-colorschemes'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'ryanoasis/vim-devicons'
 """"""
 
 "editor
 Plug 'editorconfig/editorconfig-vim'
-Plug 'ryanoasis/vim-devicons'
 
 "git
 Plug 'airblade/vim-gitgutter'
@@ -32,10 +32,7 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 
 "development
 Plug 'tpope/vim-commentary'
-Plug 'w0rp/ale' 
-" Plug 'steelsojka/deoplete-flow'
-"Plug 'wokalski/autocomplete-flow'
-
+"Plug 'w0rp/ale' 
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/neosnippet'
 Plug 'Shougo/neosnippet-snippets'
@@ -49,13 +46,12 @@ Plug 'autozimu/LanguageClient-neovim', {
 
 " (Optional) Multi-entry selection UI.
 Plug 'junegunn/fzf'
-" Required for operations modifying multiple buffers like rename.
-set hidden
 
-    " \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
+    "\ 'javascript.jsx': ['javascript-typescript-stdio'],
+    "\ 'javascript.jsx': ['flow-language-server','--stdio'],
 let g:LanguageClient_serverCommands = {
     \ 'javascript': ['javascript-typescript-stdio'],
-    \ 'javascript.jsx': ['javascript-typescript-stdio'],
+    \ 'javascript.jsx': ['tcp://127.0.0.1:2089']
     \ }
 
 
@@ -63,12 +59,8 @@ let g:LanguageClient_serverCommands = {
 "javascript
 Plug 'pangloss/vim-javascript'
 Plug 'mxw/vim-jsx'
-"Plug 'SirVer/ultisnips'
-"Plug 'honza/vim-snippets'
-"Plug 'carlitux/deoplete-ternjs', { 'for': ['javascript', 'javascript.jsx'] }
-"Plug 'othree/jspc.vim', { 'for': ['javascript', 'javascript.jsx'] }
-
-
+" Plug 'maxmellon/vim-jsx-pretty'
+" Plug 'sbdchd/neoformat'
 "html
 Plug 'othree/html5.vim'
 Plug 'mattn/emmet-vim'
@@ -76,17 +68,37 @@ Plug 'mattn/emmet-vim'
 Plug 'hail2u/vim-css3-syntax',            { 'for': 'css' }
 "sass
 Plug 'cakebaker/scss-syntax.vim'
-
+" post install (yarn install | npm install) then load plugin only for editing supported files
+Plug 'prettier/vim-prettier', {
+  \ 'do': 'yarn install',
+  \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue'] }
 """"""
 
 call plug#end()
 """"""Plugins
 
-set completeopt=longest,menuone,preview
+"set completeopt=longest,menuone,preview
 let g:deoplete#enable_at_startup = 1
-"let g:deoplete#disable_auto_complete = 1
 inoremap <expr> <C-n>  deoplete#mappings#manual_complete()
+" Plugin key-mappings.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
 
+" SuperTab like snippets behavior.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+"imap <expr><TAB>
+" \ pumvisible() ? "\<C-n>" :
+" \ neosnippet#expandable_or_jumpable() ?
+" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+" For conceal markers.
+if has('conceal')
+  set conceallevel=2 concealcursor=niv
+endif
 "general setup
 colorscheme badwolf 
 syntax enable
@@ -107,6 +119,7 @@ set ttyfast
 let mapleader = ","
 set laststatus=2
 set noswapfile
+set hidden
 
 " clipboard shortcuts
 noremap <Leader>y "*y
@@ -140,4 +153,4 @@ nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
 nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
 "autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
-"
+autocmd FileType javascript,css,html nnoremap <buffer> <C-f> :Prettier<CR>
