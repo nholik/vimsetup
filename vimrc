@@ -9,29 +9,21 @@ endif
 """"""Plugins
 call plug#begin('~/.vim/plugged')
 
-"terminal and file mgmt
-
 "NERDTree setup
 Plug 'scrooloose/nerdtree', {'on': 'NERDTreeToggle'}
-map <C-e> :NERDTreeToggle<CR>
 """
 
 "asthetics
+Plug 'ryanoasis/vim-devicons'
 Plug 'flazz/vim-colorschemes'
-"Plug 'edkolev/tmuxline'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-
-let g:airline_theme='simple'
-let g:airline_powerline_fonts = 1
-
-Plug 'ryanoasis/vim-devicons'
 """"""
 
 "editor
 Plug 'editorconfig/editorconfig-vim'
 Plug 'christoomey/vim-tmux-navigator'
-
+Plug 'junegunn/fzf'
 
 "git
 Plug 'airblade/vim-gitgutter'
@@ -39,38 +31,119 @@ Plug 'tpope/vim-fugitive'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 """"""
 
-" Plug 'tpope/vim-dispatch'
-
 "development
-Plug 'junegunn/fzf'
 " autocomplete
-Plug 'Shougo/neocomplete'
-"Plug 'Valloric/YouCompleteMe'
-" complete installation like so, see docs
-"cd ~/.vim/bundle/YouCompleteMe
-"/.install.py --cs-completer --go-completer --rust-completer --ts-completer
-"""" youcompleteme options
-" let g:ycm_key_list_select_completion = ['<TAB>', '<Down>', '<Enter>']
-" let g:ycm_autoclose_preview_window_after_completion = 1
-""""
-" syntax checking
-"Plug 'w0rp/ale'
-Plug 'vim-syntastic/syntastic'
-" recommended syntasic settings
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+" Plug 'Shougo/neocomplete'
+Plug 'nholik/deoplete.nvim'
+Plug 'roxma/nvim-yarp'
+" Plug 'roxma/vim-hug-neovim-rpc'
+"
+"Plug 'Shougo/deoplete.nvim', { 'do' : ':UpdateRemotePlugins'}
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-"""
+" syntax checking
+Plug 'w0rp/ale'
 
 "csharp
 Plug 'OmniSharp/omnisharp-vim'
 Plug 'OrangeT/vim-csharp'
-let g:syntastic_cs_checkers = ['code_checker'] " use syntastic with omnisharp
+
+Plug 'tpope/vim-commentary'
+
+call plug#end()
+""""""Plugins
+
+" For conceal markers.
+if has('conceal')
+  set conceallevel=2 concealcursor=niv
+endif
+
+"general setup
+colorscheme molokai 
+syntax enable
+set encoding=utf8
+set tabstop=4
+set softtabstop=4
+set expandtab
+set shiftwidth=4
+set number
+set showcmd
+set cursorline
+filetype indent on
+set wildmenu
+set lazyredraw
+set showmatch
+set ruler
+set visualbell
+set ttyfast
+let mapleader = "\\"
+set laststatus=2
+set noswapfile
+set hidden
+
+" clipboard shortcuts allow yanking/putting text into system clipboard
+noremap <Leader>y "*y
+noremap <Leader>p "*p
+noremap <Leader>Y "+y
+noremap <Leader>P "+p
+
+" set cursor for modes
+" 1 is the blinky block cursor
+" 2 is the default (non-blinky) block cursor
+" 3 is blinky underscore
+" 4 fixed underscore
+" 5 pipe bar (blinking)
+" 6 fixed pipe bar
+let &t_SI = "\<esc>[5 q"
+let &t_SR = "\<esc>[3 q"
+let &t_EI = "\<esc>[2 q"
+
+" let g:python_host_prog = '/usr/bin/python2'
+let g:python_host_prog = '/usr/bin/python2'
+let g:python3_host_prog = '/usr/bin/python3' 
+"set timeoutlen=1000 ttimeoutlen=0 "get rid of delay when hitting esc to leave insert mode
+
+map <C-e> :NERDTreeToggle<CR>
+
+let g:airline_theme='simple'
+let g:airline_powerline_fonts = 1
+
+let g:ale_sign_error= '⚠️'
+
+"deoplete setup
+let g:deoplete#enable_at_startup = 1
+" call deoplete#custom#option('sources', {
+" 		\ 'cs': ['omni'],
+" 		\})
+let g:deoplete#sources = {}
+let g:deoplete#sources#syntax#min_keyword_length = 3
+let g:deoplete#sources._=['buffer', 'file']
+let g:deoplete#sources.cs = ['omni' ]
+
+let g:deoplete#keyword_patterns = {}
+let g:deoplete#keyword_patterns['default'] = '\h\w*'   
+if !exists('g:deoplete#omni#input_patterns')
+    let g:deoplete#omni#input_patterns = {}
+endif
+let g:deoplete#omni#input_patterns.cs = '.*[^=\);]'
+"let g:deoplete#omni#input_patterns.cs = ['\w*']
+" Use smartcase.
+let g:deoplete#enable_smart_case = 1
+
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
+" <C-h>, <BS>: close popup and delete backword char.
+"inoremap <expr><C-h> deoplete#smart_close_popup()."\<C-h>"
+"inoremap <expr><BS>  deoplete#smart_close_popup()."\<C-h>"
+
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function() abort
+    return deoplete#close_popup() . "\<CR>"
+endfunction
+    
+"OmniSharpSetup
+"let g:syntastic_cs_checkers = ['code_checker'] " use syntastic with omnisharp
 let g:OmniSharp_selector_ui = 'fzf'    " Use fzf.vim
 let g:OmniSharp_server_stdio = 1
 " based on defaults provided in docs
@@ -79,18 +152,22 @@ let g:OmniSharp_server_stdio = 1
 " one (so the preview documentation is accessible). Remove 'preview' if you
 " don't want to see any documentation whatsoever.
 set completeopt=longest,menuone
+",preview
 
 " Fetch full documentation during omnicomplete requests.
 " By default, only Type/Method signatures are fetched. Full documentation can
 " still be fetched when you need it with the :OmniSharpDocumentation command.
-"let g:omnicomplete_fetch_full_documentation = 1
+let g:omnicomplete_fetch_full_documentation = 1
 
 " Set desired preview window height for viewing documentation.
 " You might also want to look at the echodoc plugin.
 "set previewheight=5
 
 " Tell ALE to use OmniSharp for linting C# files, and no other linters.
-" let g:ale_linters = { 'cs': ['OmniSharp'] }
+ let g:ale_linters = { 'cs': ['OmniSharp'] }
+ 
+" Enable snippet completion
+" let g:OmniSharp_want_snippet=1
 
 " Fetch semantic type/interface/identifier names on BufEnter and highlight them
 let g:OmniSharp_highlight_types = 1
@@ -100,7 +177,7 @@ augroup omnisharp_commands
 
     " When Syntastic is available but not ALE, automatic syntax check on events
     " (TextChanged requires Vim 7.4)
-    autocmd BufEnter,TextChanged,InsertLeave *.cs SyntasticCheck
+    " autocmd BufEnter,TextChanged,InsertLeave *.cs SyntasticCheck
 
     " Show type information automatically when the cursor stops moving
     autocmd CursorHold *.cs call OmniSharp#TypeLookupWithoutDocumentation()
@@ -135,9 +212,9 @@ augroup omnisharp_commands
 augroup END
 
 " Contextual code actions (uses fzf, CtrlP or unite.vim when available)
-nnoremap <Leader><Space> :OmniSharpGetCodeActions<CR>
+nnoremap <Leader>ca :OmniSharpGetCodeActions<CR>
 " Run code actions with text selected in visual mode to extract method
-xnoremap <Leader><Space> :call OmniSharp#GetCodeActions('visual')<CR>
+xnoremap <Leader>ca :call OmniSharp#GetCodeActions('visual')<CR>
 
 " Rename with dialog
 nnoremap <Leader>nm :OmniSharpRename<CR>
@@ -151,140 +228,37 @@ nnoremap <Leader>cf :OmniSharpCodeFormat<CR>
 nnoremap <Leader>ss :OmniSharpStartServer<CR>
 nnoremap <Leader>sp :OmniSharpStopServer<CR>
 
-" Enable snippet completion
-" let g:OmniSharp_want_snippet=1
 
-Plug 'tpope/vim-commentary'
+" show code actions lightbulb
+set updatetime=500
 
-call plug#end()
-""""""Plugins
+sign define OmniSharpCodeActions text=💡
+augroup OSCountCodeActions
+  autocmd!
+  autocmd FileType cs set signcolumn=yes
+  autocmd CursorHold *.cs call OSCountCodeActions()
+augroup END
 
-" For conceal markers.
-if has('conceal')
-  set conceallevel=2 concealcursor=niv
-endif
-"general setup
-colorscheme molokai 
-syntax enable
-set tabstop=4
-set softtabstop=4
-set expandtab
-set shiftwidth=4
-set number
-set showcmd
-set cursorline
-filetype indent on
-set wildmenu
-set lazyredraw
-set showmatch
-set ruler
-set visualbell
-set ttyfast
-let mapleader = ","
-set laststatus=2
-set noswapfile
-set hidden
-
-" clipboard shortcuts allow yanking/putting text into system clipboard
-noremap <Leader>y "*y
-noremap <Leader>p "*p
-noremap <Leader>Y "+y
-noremap <Leader>P "+p
-
-" set cursor for modes
-" 1 is the blinky block cursor
-" 2 is the default (non-blinky) block cursor
-" 3 is blinky underscore
-" 4 fixed underscore
-" 5 pipe bar (blinking)
-" 6 fixed pipe bar
-let &t_SI = "\<esc>[5 q"
-let &t_SR = "\<esc>[3 q"
-let &t_EI = "\<esc>[2 q"
-
-let g:python_host_prog = '/home/max/.pyenv/versions/neovim2/bin/python'
-let g:python3_host_prog = '/home/max/.pyenv/versions/neovim3/bin/python'
-set timeoutlen=1000 ttimeoutlen=0 "get rid of delay when hitting esc to leave insert mode
-
-"Note: This option must set it in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
-" Disable AutoComplPop.
-let g:acp_enableAtStartup = 0
-" Use neocomplete.
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplete#sources#syntax#min_keyword_length = 3
-let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
-
-" Define dictionary.
-let g:neocomplete#sources#dictionary#dictionaries = {
-    \ 'default' : '',
-    \ 'vimshell' : $HOME.'/.vimshell_hist',
-    \ 'scheme' : $HOME.'/.gosh_completions'
-        \ }
-
-" Define keyword.
-if !exists('g:neocomplete#keyword_patterns')
-    let g:neocomplete#keyword_patterns = {}
-endif
-let g:neocomplete#keyword_patterns['default'] = '\h\w*'
-
-" Plugin key-mappings.
-inoremap <expr><C-g>     neocomplete#undo_completion()
-inoremap <expr><C-l>     neocomplete#complete_common_string()
-
-" Recommended key-mappings.
-" <CR>: close popup and save indent.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function()
-  return neocomplete#close_popup() . "\<CR>"
-  " For no inserting <CR> key.
-  "return pumvisible() ? neocomplete#close_popup() : "\<CR>"
+function! OSCountCodeActions() abort
+  if bufname('%') ==# '' || OmniSharp#FugitiveCheck() | return | endif
+  if !OmniSharp#IsServerRunning() | return | endif
+  let opts = {
+  \ 'CallbackCount': function('s:CBReturnCount'),
+  \ 'CallbackCleanup': {-> execute('sign unplace 99')}
+  \}
+  call OmniSharp#CountCodeActions(opts)
 endfunction
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-" <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><C-y>  neocomplete#close_popup()
-inoremap <expr><C-e>  neocomplete#cancel_popup()
-" Close popup by <Space>.
-"inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
 
-" For cursor moving in insert mode(Not recommended)
-"inoremap <expr><Left>  neocomplete#close_popup() . "\<Left>"
-"inoremap <expr><Right> neocomplete#close_popup() . "\<Right>"
-"inoremap <expr><Up>    neocomplete#close_popup() . "\<Up>"
-"inoremap <expr><Down>  neocomplete#close_popup() . "\<Down>"
-" Or set this.
-"let g:neocomplete#enable_cursor_hold_i = 1
-" Or set this.
-"let g:neocomplete#enable_insert_char_pre = 1
+function! s:CBReturnCount(count) abort
+  if a:count
+    let l = getpos('.')[1]
+    let f = expand('%:p')
+    execute ':sign place 99 line='.l.' name=OmniSharpCodeActions file='.f
+  endif
+endfunction
 
-" AutoComplPop like behavior.
-"let g:neocomplete#enable_auto_select = 1
-
-" Shell like behavior(not recommended).
-"set completeopt+=longest
-"let g:neocomplete#enable_auto_select = 1
-"let g:neocomplete#disable_auto_complete = 1
-"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
-
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
-
-" Enable heavy omni completion.
-if !exists('g:neocomplete#sources#omni#input_patterns')
-  let g:neocomplete#sources#omni#input_patterns = {}
-endif
-
-let g:neocomplete#sources#omni#input_patterns.cs = '.*[^=\);]'
+" let g:vimspector_enable_mappings = 'HUMAN'
+" packadd! vimspector
 
 "debugging
 " function! MicrosoftDocs()
@@ -339,7 +313,7 @@ let g:neocomplete#sources#omni#input_patterns.cs = '.*[^=\);]'
 "     execute 'match Search /\%'.a:msg["lineNumber"].'l/'
 "     execute 'normal! '.a:msg["lineNumber"].'G'
 "     execute 'normal! zz'
-"   endif
+""   endif
 "   if cmd == "clearHighlights"
 "     match
 "   endif
@@ -354,6 +328,3 @@ let g:neocomplete#sources#omni#input_patterns.cs = '.*[^=\);]'
 "   endfor
 " endfunction
 " nnoremap <F5> :call StartDebugger()
-
-let g:vimspector_enable_mappings = 'HUMAN'
-packadd! vimspector
